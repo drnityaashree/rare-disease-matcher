@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Rare Disease Matcher Dashboard</title>
+  <link rel="stylesheet" href="/static/styles.css">
+</head>
+<body>
+  <main id="loginScreen" class="login-shell">
+    <section class="login-panel">
+      <p class="eyebrow">Secure Clinical Network</p>
+      <h1>Rare Disease Case Matcher</h1>
+      <p class="muted">Sign in as a clinician or administrator to query distributed hospital nodes.</p>
+      <label>Role</label>
+      <select id="roleSelect">
+        <option value="admin">Admin</option>
+        <option value="clinician">Doctor / Clinician</option>
+      </select>
+      <label>API Key</label>
+      <input id="apiKeyInput" type="password" value="SUPER_SECURE_RARE_DISEASE_NETWORK_KEY_2026">
+      <button id="loginButton">Enter Dashboard</button>
+    </section>
+  </main>
+
+  <main id="appShell" class="app-shell hidden">
+    <aside class="sidebar">
+      <h2>Clinical Matcher</h2>
+      <nav>
+        <button class="nav-button active" data-view="dashboardView">Dashboard</button>
+        <button class="nav-button" data-view="searchView">Search</button>
+        <button class="nav-button" data-view="analyticsView">Analytics</button>
+        <button class="nav-button" data-view="auditView">Audit Logs</button>
+        <button class="nav-button" data-view="adminView">Admin</button>
+      </nav>
+      <div class="session-card">
+        <span id="roleBadge">admin</span>
+        <button id="refreshButton">Refresh</button>
+      </div>
+    </aside>
+
+    <section class="workspace">
+      <header class="topbar">
+        <div>
+          <p class="eyebrow">Coordinator Network</p>
+          <h1>Secure Distributed Clinical Matching</h1>
+        </div>
+        <a href="/docs" target="_blank">Coordinator API</a>
+      </header>
+
+      <section id="dashboardView" class="view active-view">
+        <div class="metric-grid">
+          <article class="metric-card">
+            <span>Active Nodes</span>
+            <strong id="activeNodes">0</strong>
+          </article>
+          <article class="metric-card">
+            <span>Clinical Records</span>
+            <strong id="totalRecords">0</strong>
+          </article>
+          <article class="metric-card">
+            <span>Audit Events</span>
+            <strong id="auditCount">0</strong>
+          </article>
+          <article class="metric-card">
+            <span>Network Status</span>
+            <strong id="networkStatus">Offline</strong>
+          </article>
+        </div>
+
+        <div class="two-column">
+          <section class="panel">
+            <h2>Hospital Nodes</h2>
+            <div id="nodeList" class="list"></div>
+          </section>
+          <section class="panel">
+            <h2>Recent Distributed Queries</h2>
+            <div id="recentQueries" class="list"></div>
+          </section>
+        </div>
+      </section>
+
+      <section id="searchView" class="view">
+        <section class="panel search-panel">
+          <h2>Symptom Search</h2>
+          <div class="form-grid">
+            <label>
+              Symptoms
+              <input id="symptomInput" list="symptomSuggestions" placeholder="fever, seizures, small head">
+              <datalist id="symptomSuggestions"></datalist>
+            </label>
+            <label>
+              Default Severity
+              <select id="severityInput">
+                <option value="3">Moderate</option>
+                <option value="1">Mild</option>
+                <option value="5">Critical</option>
+              </select>
+            </label>
+            <label class="wide">
+              Symptom Selector
+              <div class="selector-row">
+                <input id="symptomSearchInput" list="symptomSuggestions" placeholder="Search symptoms from connected nodes">
+                <select id="symptomSeverityInput">
+                  <option value="3">Moderate</option>
+                  <option value="1">Mild</option>
+                  <option value="2">Mild-Moderate</option>
+                  <option value="4">Severe</option>
+                  <option value="5">Critical</option>
+                </select>
+                <button id="addSymptomButton" type="button">Add</button>
+              </div>
+              <div id="symptomOptionList" class="symptom-options"></div>
+            </label>
+            <label class="wide">
+              Custom Symptoms
+              <input id="customSymptomInput" placeholder="Add symptom not present in database, then press Add">
+            </label>
+            <div id="selectedSymptomChips" class="chip-row wide"></div>
+            <label class="wide">
+              Clinical Notes
+              <textarea id="notesInput" placeholder="Optional notes such as travel exposure or family history"></textarea>
+            </label>
+          </div>
+          <button id="searchButton">Search Distributed Network</button>
+        </section>
+
+        <section class="panel">
+          <h2>Match Results</h2>
+          <div id="resultsList" class="results-list"></div>
+        </section>
+      </section>
+
+      <section id="analyticsView" class="view">
+        <div class="two-column">
+          <section class="panel">
+            <h2>Disease Hotspots</h2>
+            <div id="hotspotList" class="list"></div>
+          </section>
+          <section class="panel">
+            <h2>Emergency Risk Alerts</h2>
+            <div id="riskList" class="list"></div>
+          </section>
+        </div>
+        <div class="two-column">
+          <section class="panel">
+            <h2>Rare Pattern Discovery</h2>
+            <div id="rarePatternList" class="list"></div>
+          </section>
+          <section class="panel">
+            <h2>Duplicate Case Detection</h2>
+            <div id="duplicateList" class="list"></div>
+          </section>
+        </div>
+        <section class="panel">
+          <h2>Symptom Evolution Timeline</h2>
+          <div id="timelineList" class="timeline"></div>
+        </section>
+      </section>
+
+      <section id="auditView" class="view">
+        <section class="panel">
+          <h2>Communication Audit</h2>
+          <table>
+            <thead>
+              <tr>
+                <th>Time</th>
+                <th>Matched Record</th>
+                <th>Responding Node</th>
+                <th>Score</th>
+              </tr>
+            </thead>
+            <tbody id="auditTable"></tbody>
+          </table>
+        </section>
+      </section>
+
+      <section id="adminView" class="view">
+        <section class="panel search-panel">
+          <h2>Manual Clinical Entry</h2>
+          <div class="form-grid">
+            <label>
+              Disease
+              <input id="adminDiseaseInput" placeholder="Addison Disease">
+            </label>
+            <label>
+              ICD-10
+              <input id="adminIcdInput" placeholder="Optional">
+            </label>
+            <label>
+              Symptom
+              <input id="adminSymptomInput" placeholder="low blood pressure">
+            </label>
+            <label>
+              SNOMED
+              <input id="adminSnomedInput" placeholder="Optional">
+            </label>
+            <label class="wide">
+              Clinical Record Symptoms
+              <input id="adminRecordSymptomsInput" placeholder="fatigue:5, weight loss:4, low blood pressure:5">
+            </label>
+            <label>
+              Age
+              <input id="adminAgeInput" type="number" min="0" max="120" placeholder="33">
+            </label>
+            <label>
+              Hospital
+              <input id="adminHospitalInput" placeholder="Manual Clinical Registry">
+            </label>
+            <label class="wide">
+              Notes
+              <textarea id="adminNotesInput" placeholder="Clinical notes, risk patterns, family history, timeline"></textarea>
+            </label>
+          </div>
+          <button id="adminSaveButton">Save Clinical Entry</button>
+          <p id="adminStatus" class="muted"></p>
+        </section>
+      </section>
+    </section>
+  </main>
+
+  <script src="/static/app.js"></script>
+</body>
+</html>

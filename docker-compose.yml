@@ -1,0 +1,48 @@
+version: '3.8'
+services:
+  coordinator:
+    build:
+      context: .
+      dockerfile: coordinator/Dockerfile
+    ports:
+      - "8000:8000"
+
+  hospital_a:
+    build:
+      context: .
+      dockerfile: node/Dockerfile
+    ports:
+      - "8001:8001"
+    environment:
+      - NODE_ID=HOSPITAL_A
+      - HOSPITAL_NAME=Hospital A
+      - NODE_URL=http://hospital_a:8001
+      - COORDINATOR_URL=http://coordinator:8000
+      - DATABASE_URL=sqlite:////data/hospital_a.db
+      - AUTO_SEED=true
+    volumes:
+      - hospital_a_data:/data
+    depends_on:
+      - coordinator
+
+  hospital_b:
+    build:
+      context: .
+      dockerfile: node/Dockerfile
+    ports:
+      - "8002:8001"
+    environment:
+      - NODE_ID=HOSPITAL_B
+      - HOSPITAL_NAME=Hospital B
+      - NODE_URL=http://hospital_b:8001
+      - COORDINATOR_URL=http://coordinator:8000
+      - DATABASE_URL=sqlite:////data/hospital_b.db
+      - AUTO_SEED=true
+    volumes:
+      - hospital_b_data:/data
+    depends_on:
+      - coordinator
+
+volumes:
+  hospital_a_data:
+  hospital_b_data:
