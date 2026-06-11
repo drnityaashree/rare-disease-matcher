@@ -1,138 +1,137 @@
 # Secure Distributed Clinical Rare Disease Case Matching System
 
-A demo-ready DBMS + ML + Distributed Systems project for matching rare disease cases across hospital nodes while preserving patient privacy.
+A distributed healthcare case-matching prototype that uses machine-learning-based similarity retrieval to identify related rare-disease cases across simulated hospital nodes without centralizing clinical records.
 
-## Overview
+> Note: This is an academic prototype built using synthetic clinical data. It is not a medical diagnostic tool and is not intended for real-world clinical decision-making.
 
-Hospitals keep clinical records in their own local SQLite databases. A central coordinator registers active hospital nodes and broadcasts symptom queries. Each node searches its local database using TF-IDF and cosine similarity, then returns ranked, explainable rare disease matches.
+---
 
-## Architecture
+## Problem Statement
+
+Rare-disease cases are difficult to identify because relevant patient records may be scattered across different hospitals. Centralizing clinical records can introduce privacy and security concerns.
+
+This project demonstrates a distributed approach in which each hospital stores its records locally. A central coordinator broadcasts a symptom query to registered hospital nodes, and each node returns ranked similar cases using TF-IDF vectorization and cosine similarity.
+
+---
+
+## System Architecture
 
 ```text
-Doctor/Admin Dashboard
-        |
-        v
+Doctor / Admin Dashboard
+          |
+          v
 Coordinator API :8000
-        |
-        +---- Hospital Node A :8001 ---- SQLite DB
-        |
-        +---- Hospital Node B :8002 ---- SQLite DB
+          |
+          +---- Hospital Node A :8001 ---- Local SQLite Database
+          |
+          +---- Hospital Node B :8002 ---- Local SQLite Database
 ```
 
-## Features
+The coordinator manages node registration and query broadcasting. The hospital nodes process queries locally and return ranked, explainable case matches.
 
-- SQLAlchemy ORM with SQLite
-- FastAPI coordinator and hospital node services
-- Dynamic node registration and heartbeat monitoring
-- TF-IDF + cosine similarity case matching
-- Symptom synonym handling
-- Explainable AI matching results
-- Risk alert scoring, including CRITICAL alerts
-- SHA-256 patient contact hashing
-- API key and role-based access headers
-- Audit logging
-- Disease hotspot detection
-- Symptom evolution timeline
-- Duplicate case detection
-- Rare symptom pattern discovery
-- Static healthcare dashboard
-- Docker Compose multi-node setup
+---
 
-## Setup
+## Dataset Summary
 
-```powershell
-pip install -r requirements.txt
-python seed_data.py
-```
+The project uses a custom synthetic dataset created for prototype testing.
 
-Start coordinator:
+* 37 unique synthetic clinical case records
+* 34 disease labels
+* 88 symptom terms
+* 2 simulated hospital nodes
+* 21 local records per hospital node
+* 42 node-local records across the distributed network, including intentional overlap between nodes
 
-```powershell
-python -m uvicorn coordinator.main:app --reload --port 8000
-```
+No real patient data is used.
 
-Start hospital node:
+---
 
-```powershell
-$env:NODE_ID="HOSPITAL_A"
-$env:NODE_URL="http://127.0.0.1:8001"
-$env:COORDINATOR_URL="http://127.0.0.1:8000"
-python -m uvicorn node.main:app --reload --port 8001
-```
+## Machine-Learning Approach
 
-Open dashboard:
+The matching engine uses:
 
-```text
-http://127.0.0.1:8000/dashboard
-```
+* TF-IDF vectorization for symptom and clinical-note representation
+* Cosine similarity for case ranking
+* Symptom synonym normalization
+* Severity-weighted matching
+* Clinical-note enrichment
+* Age-context scoring
+* Rare-disease filtering
+* Explainable matched-symptom output
 
-API docs:
+The project performs similarity-based retrieval and ranking. It does not claim clinically validated disease prediction.
 
-```text
-http://127.0.0.1:8000/docs
-http://127.0.0.1:8001/docs
-```
+---
 
-## Security Headers
+## Key Features
 
-Protected node APIs require:
+### Distributed Architecture
 
-```text
-X-API-Key: SUPER_SECURE_RARE_DISEASE_NETWORK_KEY_2026
-X-Role: admin
-```
+* FastAPI coordinator service
+* FastAPI hospital-node services
+* Dynamic node registration
+* Heartbeat monitoring
+* Distributed query broadcasting
+* Ranked result aggregation
+* Docker Compose multi-node setup
 
-## Sample Search
+### Database Layer
 
-```json
-{
-  "symptoms": ["high temperature", "seizures", "small head"],
-  "severity": {
-    "fever": 5,
-    "seizures": 5,
-    "microcephaly": 5
-  },
-  "notes": "infant case with neurological symptoms",
-  "top_k": 3
-}
-```
+* SQLite local databases
+* SQLAlchemy ORM
+* Structured clinical-record storage
+* Audit logging
+* Duplicate-case analysis
+* Symptom-evolution timeline
 
-Expected top result:
+### ML and Analytics
 
-```text
-Congenital Zika Syndrome
-Matched symptoms: Fever, Microcephaly, Seizures
-Risk: HIGH or CRITICAL
-```
+* TF-IDF and cosine-similarity matching
+* Severity-aware ranking
+* Symptom synonym handling
+* Explainable matching results
+* Risk-alert scoring
+* Disease hotspot detection
+* Rare symptom-pattern discovery
 
-## Docker
+### Prototype Security Controls
 
-```powershell
-docker compose up --build
-```
+* SHA-256 hashing for simulated patient-contact values
+* API-key-based access control
+* Role headers
+* Audit logging
 
-Expected services:
+> The security controls are implemented for academic demonstration purposes and require production hardening before real-world use.
 
-```text
-coordinator  -> http://127.0.0.1:8000
-hospital_a   -> http://127.0.0.1:8001
-hospital_b   -> http://127.0.0.1:8002
-```
+### Frontend
 
-Verify:
+* Static HTML, CSS, and JavaScript dashboard
+* Symptom-search interface
+* Ranked case-match display
+* Risk-alert display
+* Analytics visualization
 
-```powershell
-Invoke-RestMethod http://127.0.0.1:8000/nodes
-```
+---
 
-## Testing
+## Technologies Used
 
-```powershell
-python smoke_test.py
-python integration_test.py
-```
+* Python
+* FastAPI
+* SQLAlchemy
+* SQLite
+* Scikit-learn
+* TF-IDF Vectorization
+* Cosine Similarity
+* HTML
+* CSS
+* JavaScript
+* Docker Compose
+* Git
+* GitHub
 
-## Final Folder Structure
+---
+
+## Project Structure
 
 ```text
 coordinator/
@@ -165,13 +164,237 @@ seed_data.py
 setup_db.py
 docker-compose.yml
 requirements.txt
+.gitignore
+README.md
 ```
 
-## Screenshots
+---
 
-Run the project and capture:
+## Local Setup
 
-- `http://127.0.0.1:8000/dashboard`
-- `http://127.0.0.1:8000/docs`
-- successful `/find-matches` response
-- `/nodes` showing active hospital nodes
+### 1. Clone the Repository
+
+```bash
+git clone https://github.com/drnityaashree/rare-disease-matcher.git
+cd rare-disease-matcher
+```
+
+### 2. Create and Activate a Virtual Environment
+
+#### Windows PowerShell
+
+```powershell
+python -m venv .venv
+.venv\Scripts\Activate.ps1
+```
+
+#### macOS or Linux
+
+```bash
+python3 -m venv .venv
+source .venv/bin/activate
+```
+
+### 3. Install Dependencies
+
+```bash
+pip install -r requirements.txt
+```
+
+### 4. Seed the Synthetic Dataset
+
+```bash
+python seed_data.py
+```
+
+---
+
+## Start the Services Manually
+
+### Start the Coordinator
+
+```bash
+python -m uvicorn coordinator.main:app --reload --port 8000
+```
+
+### Start Hospital Node A
+
+Open a new PowerShell terminal:
+
+```powershell
+$env:NODE_ID="HOSPITAL_A"
+$env:NODE_URL="http://127.0.0.1:8001"
+$env:COORDINATOR_URL="http://127.0.0.1:8000"
+python -m uvicorn node.main:app --reload --port 8001
+```
+
+### Start Hospital Node B
+
+Open another PowerShell terminal:
+
+```powershell
+$env:NODE_ID="HOSPITAL_B"
+$env:NODE_URL="http://127.0.0.1:8002"
+$env:COORDINATOR_URL="http://127.0.0.1:8000"
+python -m uvicorn node.main:app --reload --port 8002
+```
+
+---
+
+## Dashboard and API Documentation
+
+Dashboard:
+
+```text
+http://127.0.0.1:8000/dashboard
+```
+
+Coordinator API documentation:
+
+```text
+http://127.0.0.1:8000/docs
+```
+
+Hospital Node A API documentation:
+
+```text
+http://127.0.0.1:8001/docs
+```
+
+Hospital Node B API documentation:
+
+```text
+http://127.0.0.1:8002/docs
+```
+
+---
+
+## Docker Compose Setup
+
+Run:
+
+```bash
+docker compose up --build
+```
+
+Expected services:
+
+```text
+coordinator  -> http://127.0.0.1:8000
+hospital_a   -> http://127.0.0.1:8001
+hospital_b   -> http://127.0.0.1:8002
+```
+
+Verify registered nodes:
+
+```powershell
+Invoke-RestMethod http://127.0.0.1:8000/nodes
+```
+
+---
+
+## Sample Search Request
+
+```json
+{
+  "symptoms": [
+    "high temperature",
+    "seizures",
+    "small head"
+  ],
+  "severity": {
+    "fever": 5,
+    "seizures": 5,
+    "microcephaly": 5
+  },
+  "notes": "infant case with neurological symptoms",
+  "top_k": 3
+}
+```
+
+Expected top-ranked result:
+
+```text
+Congenital Zika Syndrome
+```
+
+Expected matched symptoms:
+
+```text
+Fever
+Microcephaly
+Seizures
+```
+
+The system may generate a high-risk or critical-risk alert based on the severity values.
+
+---
+
+## Testing
+
+Run the smoke test:
+
+```bash
+python smoke_test.py
+```
+
+Run the integration test:
+
+```bash
+python integration_test.py
+```
+
+The prototype has passed local smoke tests, integration checks, and distributed multi-node query testing using synthetic clinical records.
+
+---
+
+## Evaluation Status
+
+Formal retrieval evaluation is in progress.
+
+Future evaluation will use labelled query-to-relevant-case pairs and ranking metrics such as:
+
+* Precision@K
+* Recall@K
+* Mean Reciprocal Rank
+* Top-K retrieval accuracy
+
+The current version does not claim a clinically validated accuracy score.
+
+---
+
+## Limitations
+
+* The dataset is synthetic and intended for academic prototype testing.
+* The system is not a medical diagnostic tool.
+* Similarity scores must not be interpreted as clinical recommendations.
+* The security controls are demonstration-level controls and require production hardening.
+* The prototype has not been connected to real hospital databases.
+* Formal retrieval benchmarking is still in progress.
+
+---
+
+## Future Enhancements
+
+* Evaluate retrieval performance using labelled relevance pairs
+* Add Precision@K, Recall@K, and Mean Reciprocal Rank metrics
+* Extend the synthetic dataset
+* Improve dashboard visualizations
+* Add production-grade authentication
+* Add encrypted communication between nodes
+
+---
+
+## Author
+
+Nityaashree D R
+Computer Science and Engineering
+B.N.M. Institute of Technology, Bengaluru
+
+GitHub: [drnityaashree](https://github.com/drnityaashree)
+
+---
+
+## License
+
+This project is intended for academic and educational purposes.
